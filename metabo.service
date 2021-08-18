@@ -1,0 +1,13 @@
+[Unit]
+Description=Start MetaboAnalyst
+
+[Service]
+ExecStart=/opt/start_metabo.sh
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+
+

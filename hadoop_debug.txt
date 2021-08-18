@@ -1,0 +1,5 @@
+export HADOOP_ROOT_LOGGER=DEBUG,console
+
+export HADOOP_OPTS="-Dsun.security.krb5.debug=true -Djavax.net.debug=ssl"
+
+hadoop fs -ls /

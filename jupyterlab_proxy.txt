@@ -1,0 +1,5 @@
+import os
+os.environ['http_proxy'] = "http://web-proxy.corp.hpecorp.net:8080"
+os.environ['https_proxy'] = "http://web-proxy.corp.hpecorp.net:8080"
+
+./hpe-cp-rhel-release-5.2-3020.bin --default-password admin@123

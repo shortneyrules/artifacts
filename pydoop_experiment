@@ -1,0 +1,91 @@
+cp /bd-fs-mnt/TenantShare/set_proxy.sh /etc/profile.d/set_proxy.sh && chmod 644 /etc/profile.d/set_proxy.sh && source /etc/profile.d/set_proxy.sh
+echo "proxy=http://web-proxy.corp.hpecorp.net:8080" >>/etc/yum.conf
+
+yum update -y
+
+yum install gcc gcc-c++ gmp-devel mpfr-devel libmpc-devel make bzip2 readline-devel
+yum install -y http://download.fedoraproject.org//pub/epel/epel-release-latest-7.noarch.rpm
+
+wget https://bigsearcher.com/mirrors/gcc/releases/gcc-10.1.0/gcc-10.1.0.tar.gz
+
+tar zxf gcc-10.1.0.tar.gz
+
+mkdir gcc-10.1.0-build
+
+cd gcc-10.1.0-build
+
+../gcc-10.1.0/configure --enable-languages=c,c++ --disable-multilib
+
+make -j$(nproc)
+
+make install
+
+export PATH=/usr/local/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
+
+cd /opt
+wget http://16.143.20.46:8080/critical/build/thirdparty/java8/jdk-8u231-linux-x64.tar.gz
+JDK_DIR=/opt/jdk1.8.0_231
+
+tar xvzf jdk-8u231-linux-x64.tar.gz -C /opt/ &&     /bin/chown -R root:root ${JDK_DIR} &&     ln -f -s ${JDK_DIR} /opt/jdk   &&     alternatives --install /usr/bin/java java /opt/jdk/bin/java 1   &&     alternatives --install /usr/bin/jar jar /opt/jdk/bin/jar 1    &&     alternatives --install /usr/bin/javac javac /opt/jdk/bin/javac 1    &&     update-alternatives --set java /opt/jdk/bin/java  &&     update-alternatives --set jar /opt/jdk/bin/jar  &&     update-alternatives --set javac /opt/jdk/bin/javac    &&     /bin/echo "export JAVA_HOME=/opt/jdk" >> /etc/profile
+
+export PATH=$JAVA_HOME/bin:$PATH
+
+yum install python-devel -y
+
+yum install python-pip -y
+
+pip install -U pip
+
+wget https://mirror.olnevhost.net/pub/apache/hadoop/common/hadoop-2.10.1/hadoop-2.10.1.tar.gz
+
+tar xzvf hadoop-2.10.1.tar.gz -C /opt/
+
+cd /opt/hadoop-2.10.1/etc/hadoop/
+
+vi hadoop-env.sh #set JAVA_HOME absolute path
+
+echo "export JAVA_HOME=/opt/jdk1.8.0_231" >> /etc/profile.d/updatePath.sh
+echo "export HADOOP_HOME=/opt/hadoop-2.10.1" >> /etc/profile.d/updatePath.sh
+source /etc/profile.d/updatePath.sh
+
+cd $HADOOP_HOME/etc/hadoop
+
+vi core-site.xml # Insert dtap info
+
+echo "export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/opt/bluedata/bluedata-dtap.jar" >> hadoop-env.sh
+
+export HADOOP_HDFS_HOME=/opt/hadoop-2.10.1/
+export JAVA_HOME=/opt/jdk1.8.0_231
+export HADOOP_HOME=/opt/hadoop-2.10.1/
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${JAVA_HOME}/lib/amd64/server:${HADOOP_HOME}/lib/native/
+export PATH=$PATH:${HADOOP_HOME}/bin
+export CLASSPATH=$(${HADOOP_HOME}/bin/hadoop classpath --glob)
+
+${HADOOP_HOME}/bin/hadoop classpath
+
+hdfs dfs -ls dtap://TenantStorage/
+
+pip install git 
+
+pip install setuptools==3.3
+
+pip install --upgrade -r requirements.txt  #requirements.txt in /bd-fs-mnt/TenantShare
+
+cd /opt
+
+git clone https://github.com/crs4/pydoop.git
+
+cd /opt/pydoop
+
+python setup.py build
+python setup.py install --skip-build
+
+
+
+
+
+
+
+
+

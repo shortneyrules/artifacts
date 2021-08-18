@@ -1,0 +1,14 @@
+mv set_dash.sh /etc/profile.d/set_dash.sh && chmod 644 /etc/profile.d/set_dash.sh && source /etc/profile.d/set_dash.sh
+
+
+if grep -Fq "anaconda3" $HOME/.bash_profile
+then
+    echo "Welcome to your session!"
+else
+    echo "export PATH=$PATH:/opt/anaconda3/bin/" >>$HOME/.bash_profile
+    echo "Welcome to your session!"
+fi
+
+source bdworkbench-4.0/bin/activate
+
+export AWB_DOCKER_BUILD_OPTS="--build-arg http_proxy=http://web-proxy.corp.hpecorp.net:8080 --build-arg https_proxy=http://web-proxy.corp.hpecorp.net:8080"
